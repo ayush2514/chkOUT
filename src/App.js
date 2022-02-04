@@ -1,13 +1,38 @@
-import React from 'react';
-import './App.css';
+import React,{useEffect} from 'react';
+import './App.css'
 import Header from './Header'
 import Home from './Home'
 import CheckOut from './CheckOut'
 import Login from './Login'
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom"
+import { useStateValue} from "./StateProvider"
+import { auth } from './firebase';
 function App() {
-  
+  //Creating a Listener who keeps track of who's signed in.
+  const [{}, dispatch] = useStateValue();
+  useEffect(() =>{
+    
+     //Once the app loads we attach this Listener.If we log in,it modifies the code.If we register this modifies ..
+    auth.onAuthStateChanged(authUser =>{
+      console.log('The user is >>>',authUser)
+
+      if(authUser) {
+        //The user just logged in/ The user was logged in from before
+        //Storing User inside React context Api
+        dispatch({
+          type: 'SET_USER',
+          user: authUser //Fire off the event and shoot it into Data Layer 
+        })
+      }
+      else {
+        //the user is logged out.
+        dispatch({
+        type: 'SET_USER',
+        user: null
+        })
+      }
+    })
+  },[])
   return (
     <Router>
     <div className="App">

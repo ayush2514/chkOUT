@@ -5,10 +5,17 @@ import StarsIcon from '@mui/icons-material/Stars';
 import LocalMallIcon from '@mui/icons-material/LocalMall';
 import {Link} from "react-router-dom";
 import { useStateValue } from "./StateProvider";
+import {auth} from './firebase'
 
 function Header() {
     //Rendering the Header Component.Rendering refers to displaying the output in the browser.
-    const [{ basket}, dispatch] = useStateValue();
+    const [{ basket,user}, dispatch] = useStateValue();
+    
+    const handleAuthentication = () => {
+        if (user) {
+          auth.signOut();
+        }
+      }
     return (
         <div className="header">
             <Link to="/">
@@ -20,10 +27,10 @@ function Header() {
         </div>
         
         <div className="header__nav">
-        <Link to="/login">
-            <div className="header__option">
+        <Link to={!user && "/login"}>
+            <div onClick={handleAuthentication} className="header__option">
                 <span className="header__optionLineOne">Hello Ayush!</span>
-                <span className="header__optionLineTwo">Sign In</span>
+                <span className="header__optionLineTwo">{user?'Sign Out':'Sign In'}</span>
             </div>
             </Link>
             <div className="header__option">
